@@ -1,46 +1,106 @@
-# Getting Started with Create React App
+# FutureFolio by Be Limitless
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern React dashboard website based on ARK Invest's "Big Ideas 2025" report categories. FutureFolio serves as a premium stock-picking service featuring sector-specific investment recommendations with comprehensive due diligence, real-time data visualization, and analytics.
 
-## Available Scripts
+![FutureFolio Dashboard](https://i.imgur.com/placeholder.png)
 
-In the project directory, you can run:
+## Features
 
-### `npm start`
+- **Professional Dark Theme**: Custom Material UI theme with dark and light mode support
+- **Responsive Design**: Mobile-friendly layout with collapsible sidebar
+- **Interactive Charts**: Data visualization for market and sector performance
+- **Investment Recommendations**: Detailed stock analysis with due diligence
+- **Sector-Specific Pages**: Dedicated pages for each innovative sector
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Sectors Covered
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- AI & Machine Learning
+- Blockchain & Digital Assets
+- Robotics & Automation
+- Genomic Revolution
+- Space Exploration
+- Advanced Manufacturing
+- Fintech & Digital Payments
+- Next-Generation Internet
+- Autonomous Mobility
 
-### `npm test`
+## Getting Started
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Prerequisites
 
-### `npm run build`
+- Node.js (v14.0.0 or later)
+- npm (v6.0.0 or later)
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. Clone the repository
+   ```
+   git clone https://github.com/yourusername/futurefolio.git
+   cd futurefolio
+   ```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+2. Install dependencies
+   ```
+   npm install
+   ```
 
-### `npm run eject`
+3. Start the development server
+   ```
+   npm start
+   ```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Building for Production
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+npm run build
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+## Technologies Used
 
-## Learn More
+- React
+- TypeScript
+- Material UI
+- Recharts
+- React Router
+- Axios
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Project Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+futurefolio/
+├── public/
+│   ├── index.html
+│   └── manifest.json
+├── src/
+│   ├── components/
+│   │   ├── Cards/
+│   │   ├── Charts/
+│   │   └── Layout/
+│   ├── pages/
+│   │   ├── Dashboard/
+│   │   └── [Sector Pages]/
+│   ├── services/
+│   ├── theme/
+│   ├── App.tsx
+│   └── index.tsx
+```
+
+## Future Enhancements
+
+- User authentication and profiles
+- Real-time data from financial APIs
+- Portfolio management features
+- Alerts and notifications
+- Mobile app version
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- ARK Invest for the "Big Ideas 2025" report inspiration
+- Material UI for the component library
+- Recharts for the charting library
