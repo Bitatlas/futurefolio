@@ -1,169 +1,107 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
-  Box,
-  Drawer,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  IconButton,
+  Box,
   Typography,
-  useTheme,
-  useMediaQuery,
   Divider,
-  Tooltip,
 } from '@mui/material';
 import {
   Dashboard as DashboardIcon,
-  SmartToy as AIIcon,
-  Link as BlockchainIcon,
-  PrecisionManufacturing as RoboticsIcon,
+  Psychology as AIIcon,
+  CurrencyBitcoin as BlockchainIcon,
+  SmartToy as RoboticsIcon,
   Biotech as GenomicsIcon,
   Rocket as SpaceIcon,
-  Print as ManufacturingIcon,
-  Payments as FintechIcon,
+  Factory as ManufacturingIcon,
+  AccountBalance as FintechIcon,
   Language as InternetIcon,
   DirectionsCar as MobilityIcon,
-  ChevronLeft as ChevronLeftIcon,
-  ChevronRight as ChevronRightIcon,
 } from '@mui/icons-material';
-import { styled } from '@mui/material/styles';
 
-// Define the drawer width
-const drawerWidth = 240;
-
-// Styled components
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  padding: theme.spacing(0, 1),
-  ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
-}));
-
-// Define the navigation items
-const navItems = [
-  { name: 'Dashboard', path: '/', icon: <DashboardIcon /> },
-  { name: 'AI & Machine Learning', path: '/ai', icon: <AIIcon /> },
-  { name: 'Blockchain & Digital Assets', path: '/blockchain', icon: <BlockchainIcon /> },
-  { name: 'Robotics & Automation', path: '/robotics', icon: <RoboticsIcon /> },
-  { name: 'Genomic Revolution', path: '/genomics', icon: <GenomicsIcon /> },
-  { name: 'Space Exploration', path: '/space', icon: <SpaceIcon /> },
-  { name: 'Advanced Manufacturing', path: '/manufacturing', icon: <ManufacturingIcon /> },
-  { name: 'Fintech & Digital Payments', path: '/fintech', icon: <FintechIcon /> },
-  { name: 'Next-Generation Internet', path: '/internet', icon: <InternetIcon /> },
-  { name: 'Autonomous Mobility', path: '/mobility', icon: <MobilityIcon /> },
-];
-
-interface SidebarProps {
-  open: boolean;
-  onClose: () => void;
-  onToggle: () => void;
+export interface SidebarProps {
+  open?: boolean;
+  onClose?: () => void;
+  onToggle?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ open, onClose, onToggle }) => {
-  const theme = useTheme();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+const menuItems = [
+  { text: 'Dashboard', icon: <DashboardIcon />, path: '/' },
+  { text: 'AI & Machine Learning', icon: <AIIcon />, path: '/ai' },
+  { text: 'Blockchain & Digital Assets', icon: <BlockchainIcon />, path: '/blockchain' },
+  { text: 'Robotics & Automation', icon: <RoboticsIcon />, path: '/robotics' },
+  { text: 'Genomic Revolution', icon: <GenomicsIcon />, path: '/genomics' },
+  { text: 'Space Exploration', icon: <SpaceIcon />, path: '/space' },
+  { text: 'Advanced Manufacturing', icon: <ManufacturingIcon />, path: '/manufacturing' },
+  { text: 'Fintech & Digital Payments', icon: <FintechIcon />, path: '/fintech' },
+  { text: 'Next-Generation Internet', icon: <InternetIcon />, path: '/internet' },
+  { text: 'Autonomous Mobility', icon: <MobilityIcon />, path: '/mobility' },
+];
 
-  // Handle navigation
+const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleNavigation = (path: string) => {
     navigate(path);
-    if (isMobile) {
+    if (onClose) {
       onClose();
     }
   };
 
   return (
-    <Drawer
-      variant={isMobile ? 'temporary' : 'permanent'}
-      open={open}
-      onClose={onClose}
-      sx={{
-        width: open ? drawerWidth : theme.spacing(7),
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          width: open ? drawerWidth : theme.spacing(7),
-          boxSizing: 'border-box',
-          borderRight: `1px solid ${theme.palette.divider}`,
-          backgroundColor: theme.palette.background.default,
-          transition: theme.transitions.create(['width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.enteringScreen,
-          }),
-          overflowX: 'hidden',
-        },
-      }}
-    >
-      <DrawerHeader>
-        {open && (
-          <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', pl: 2 }}>
-            <Typography variant="h6" color="primary" fontWeight="bold" noWrap>
-              FutureFolio
-            </Typography>
-            <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>
-              by Be Limitless
-            </Typography>
-          </Box>
-        )}
-        <IconButton onClick={onToggle} sx={{ color: theme.palette.primary.main }}>
-          {open ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-        </IconButton>
-      </DrawerHeader>
-      <Divider />
-      <List sx={{ pt: 1 }}>
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.path;
-          return (
-            <ListItem key={item.path} disablePadding sx={{ display: 'block', mb: 0.5 }}>
-              <Tooltip title={open ? '' : item.name} placement="right">
-                <ListItemButton
-                  selected={isActive}
-                  onClick={() => handleNavigation(item.path)}
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? 'initial' : 'center',
-                    px: 2.5,
-                    mx: 1,
-                    borderRadius: '8px',
-                    '&.Mui-selected': {
-                      backgroundColor: 'rgba(255, 215, 0, 0.15)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(255, 215, 0, 0.25)',
-                      },
-                    },
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 0,
-                      mr: open ? 2 : 'auto',
-                      justifyContent: 'center',
-                      color: isActive ? theme.palette.primary.main : theme.palette.text.primary,
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    sx={{
-                      opacity: open ? 1 : 0,
-                      '& .MuiTypography-root': {
-                        fontWeight: isActive ? 600 : 400,
-                        color: isActive ? theme.palette.primary.main : theme.palette.text.primary,
-                      },
-                    }}
-                  />
-                </ListItemButton>
-              </Tooltip>
-            </ListItem>
-          );
-        })}
+    <Box sx={{ py: 2 }}>
+      <Box sx={{ px: 3, mb: 3 }}>
+        <Typography variant="h5" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+          FutureFolio
+        </Typography>
+        <Typography variant="body2" color="text.secondary">
+          Premium Stock Picks
+        </Typography>
+      </Box>
+      <Divider sx={{ mb: 2 }} />
+      <List>
+        {menuItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton
+              onClick={() => handleNavigation(item.path)}
+              selected={location.pathname === item.path}
+              sx={{
+                mx: 1,
+                borderRadius: 1,
+                '&.Mui-selected': {
+                  backgroundColor: 'rgba(255, 215, 0, 0.1)',
+                  '&:hover': {
+                    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+                  },
+                },
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  color: location.pathname === item.path ? 'primary.main' : 'text.secondary',
+                }}
+              >
+                {item.icon}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.text}
+                sx={{
+                  '& .MuiListItemText-primary': {
+                    color: location.pathname === item.path ? 'primary.main' : 'text.primary',
+                    fontWeight: location.pathname === item.path ? 600 : 400,
+                  },
+                }}
+              />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
-    </Drawer>
+    </Box>
   );
 };
 

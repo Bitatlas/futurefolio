@@ -1,186 +1,203 @@
-import axios from 'axios';
+import { TimeRange } from '../components/UI/TimeRangeSelector';
 
-// Define interfaces for stock data
-export interface StockQuote {
-  symbol: string;
-  price: number;
+export interface StockData {
+  name: string;
+  value: number;
   change: number;
-  changePercent: number;
-  dayHigh: number;
-  dayLow: number;
-  volume: number;
-  marketCap?: number;
-  previousClose: number;
+  percentChange: number;
 }
 
-export interface HistoricalData {
-  date: string;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-  volume: number;
+export interface MarketData {
+  name: string;
+  SP500: number;
+  [key: string]: string | number;
 }
 
-// Yahoo Finance API endpoints
-const YAHOO_FINANCE_API = 'https://query1.finance.yahoo.com/v8/finance/chart';
+export interface SectorPerformance {
+  name: string;
+  value: number;
+  change: number;
+  percentChange: number;
+}
 
-/**
- * Fetch current stock quote data
- * @param symbol Stock symbol (e.g., AAPL, MSFT)
- * @returns Promise with stock quote data
- */
-export const getStockQuote = async (symbol: string): Promise<StockQuote> => {
-  try {
-    const response = await axios.get(`${YAHOO_FINANCE_API}/${symbol}`, {
-      params: {
-        interval: '1d',
-        range: '1d',
-      },
-    });
+export interface StockPickData {
+  return: number;
+  sector: string;
+}
 
-    const data = response.data.chart.result[0];
-    const quote = data.indicators.quote[0];
-    const meta = data.meta;
-    const timestamp = data.timestamp[data.timestamp.length - 1];
-    const currentPrice = quote.close[quote.close.length - 1];
-    const previousClose = meta.previousClose;
-    const change = currentPrice - previousClose;
-    const changePercent = (change / previousClose) * 100;
+export interface SectorData {
+  ytd: number;
+}
 
-    return {
-      symbol: meta.symbol,
-      price: currentPrice,
-      change,
-      changePercent,
-      dayHigh: quote.high[quote.high.length - 1],
-      dayLow: quote.low[quote.low.length - 1],
-      volume: quote.volume[quote.volume.length - 1],
-      marketCap: meta.marketCap,
-      previousClose,
-    };
-  } catch (error) {
-    console.error(`Error fetching stock quote for ${symbol}:`, error);
-    throw new Error(`Failed to fetch stock quote for ${symbol}`);
-  }
-};
+type SectorName = 
+  | 'AI & Machine Learning'
+  | 'Blockchain & Digital Assets'
+  | 'Robotics & Automation'
+  | 'Genomic Revolution'
+  | 'Space Exploration'
+  | 'Advanced Manufacturing'
+  | 'Fintech & Digital Payments'
+  | 'Next-Generation Internet'
+  | 'Autonomous Mobility';
 
-/**
- * Fetch historical stock data
- * @param symbol Stock symbol (e.g., AAPL, MSFT)
- * @param range Time range (e.g., 1d, 5d, 1mo, 3mo, 6mo, 1y, 5y, max)
- * @param interval Time interval (e.g., 1m, 5m, 15m, 1d, 1wk, 1mo)
- * @returns Promise with historical stock data
- */
-export const getHistoricalData = async (
-  symbol: string,
-  range: string = '1mo',
-  interval: string = '1d'
-): Promise<HistoricalData[]> => {
-  try {
-    const response = await axios.get(`${YAHOO_FINANCE_API}/${symbol}`, {
-      params: {
-        interval,
-        range,
-      },
-    });
-
-    const data = response.data.chart.result[0];
-    const quote = data.indicators.quote[0];
-    const timestamps = data.timestamp;
-
-    return timestamps.map((timestamp: number, index: number) => ({
-      date: new Date(timestamp * 1000).toISOString().split('T')[0],
-      open: quote.open[index],
-      high: quote.high[index],
-      low: quote.low[index],
-      close: quote.close[index],
-      volume: quote.volume[index],
-    }));
-  } catch (error) {
-    console.error(`Error fetching historical data for ${symbol}:`, error);
-    throw new Error(`Failed to fetch historical data for ${symbol}`);
-  }
-};
-
-/**
- * Fetch multiple stock quotes at once
- * @param symbols Array of stock symbols
- * @returns Promise with array of stock quotes
- */
-export const getMultipleStockQuotes = async (symbols: string[]): Promise<StockQuote[]> => {
-  try {
-    const promises = symbols.map((symbol) => getStockQuote(symbol));
-    return await Promise.all(promises);
-  } catch (error) {
-    console.error('Error fetching multiple stock quotes:', error);
-    throw new Error('Failed to fetch multiple stock quotes');
-  }
-};
-
-/**
- * Generate mock stock data for demo purposes
- * @param symbol Stock symbol
- * @returns Mock stock quote data
- */
-export const getMockStockQuote = (symbol: string): StockQuote => {
-  const price = Math.random() * 1000 + 50;
-  const previousClose = price * (1 + (Math.random() * 0.1 - 0.05));
-  const change = price - previousClose;
-  const changePercent = (change / previousClose) * 100;
-
-  return {
-    symbol,
-    price,
-    change,
-    changePercent,
-    dayHigh: price * 1.02,
-    dayLow: price * 0.98,
-    volume: Math.floor(Math.random() * 10000000),
-    marketCap: price * 1000000000,
-    previousClose,
+// Realistic market data generator with trends and volatility
+const generateMarketData = (timeRange: TimeRange): MarketData[] => {
+  const dataPoints = {
+    '6m': 180,
+    '1y': 365,
+    '5y': 1825
   };
-};
 
-/**
- * Generate mock historical data for demo purposes
- * @param symbol Stock symbol
- * @param days Number of days of data to generate
- * @returns Array of mock historical data points
- */
-export const getMockHistoricalData = (symbol: string, days: number = 30): HistoricalData[] => {
-  const data: HistoricalData[] = [];
-  let price = Math.random() * 1000 + 50;
+  const points = dataPoints[timeRange];
+  const baseValue = 4500;
+  const data: MarketData[] = [];
+  const now = new Date();
 
-  for (let i = days; i >= 0; i--) {
-    const date = new Date();
+  // Market trend parameters
+  const trendStrength = 0.15; // Annual trend strength
+  const volatility = 0.12; // Annual volatility
+  const meanReversion = 0.001; // Mean reversion strength
+  let currentValue = baseValue;
+  let previousValue = baseValue;
+
+  for (let i = points; i >= 0; i--) {
+    const date = new Date(now);
     date.setDate(date.getDate() - i);
-    const dateStr = date.toISOString().split('T')[0];
-
-    // Random price movement
-    price = price * (1 + (Math.random() * 0.06 - 0.03));
-    const open = price * (1 + (Math.random() * 0.02 - 0.01));
-    const high = Math.max(open, price) * (1 + Math.random() * 0.02);
-    const low = Math.min(open, price) * (1 - Math.random() * 0.02);
-    const volume = Math.floor(Math.random() * 10000000);
+    
+    // Generate realistic price movement
+    const trend = (trendStrength / 365) * baseValue; // Daily trend
+    const dailyVolatility = (volatility / Math.sqrt(365)) * baseValue;
+    const randomWalk = (Math.random() - 0.5) * 2 * dailyVolatility;
+    const reversion = meanReversion * (baseValue - currentValue);
+    
+    // Add seasonal patterns
+    const seasonality = Math.sin(i / 180 * Math.PI) * 50;
+    
+    // Market cycles (longer-term patterns)
+    const marketCycle = Math.sin(i / 720 * Math.PI) * 200;
+    
+    // Calculate new value with all components
+    currentValue = previousValue + trend + randomWalk + reversion + 
+                  (seasonality / 365) + (marketCycle / 365);
+    
+    // Add occasional market shocks
+    if (Math.random() < 0.001) { // 0.1% chance of a shock
+      currentValue *= (1 + (Math.random() - 0.5) * 0.05); // ±2.5% shock
+    }
 
     data.push({
-      date: dateStr,
-      open,
-      high,
-      low,
-      close: price,
-      volume,
+      name: date.toISOString().split('T')[0],
+      SP500: Number(currentValue.toFixed(2))
     });
+
+    previousValue = currentValue;
   }
 
   return data;
 };
 
-export default {
-  getStockQuote,
-  getHistoricalData,
-  getMultipleStockQuotes,
-  getMockStockQuote,
-  getMockHistoricalData,
+// Historical performance data from the Q4 report
+const stockPicks: Record<string, StockPickData> = {
+  'PLTR': { return: 1087.77, sector: 'AI & Machine Learning' },
+  'META': { return: 355.84, sector: 'AI & Machine Learning' },
+  'CRWD': { return: 197.34, sector: 'Cybersecurity' },
+  'DASH': { return: 127.69, sector: 'Digital Commerce' },
+  'SOUN': { return: 125.21, sector: 'AI & Machine Learning' },
+  'CHWY': { return: 112.35, sector: 'Digital Commerce' },
+  'AMZN': { return: 104.77, sector: 'Digital Commerce' },
+  'SMCI': { return: 93.19, sector: 'AI Infrastructure' },
+  'SHOP': { return: 87.77, sector: 'Digital Commerce' },
+  'TWLO': { return: 84.75, sector: 'Cloud Computing' },
+  'KTOS': { return: 84.14, sector: 'Defense Technology' },
+  'GOOGL': { return: 70.13, sector: 'AI & Machine Learning' },
+  'MELI': { return: 68.18, sector: 'Digital Commerce' },
+  'TFC': { return: 57.95, sector: 'Fintech' },
+  'AVAV': { return: 55.08, sector: 'Defense Technology' }
+};
+
+// Sector performance data
+const sectorPerformance: Record<SectorName, SectorData> = {
+  'AI & Machine Learning': { ytd: 4.41 },
+  'Blockchain & Digital Assets': { ytd: -3.35 },
+  'Robotics & Automation': { ytd: 7.01 },
+  'Genomic Revolution': { ytd: 5.23 },
+  'Space Exploration': { ytd: 2.89 },
+  'Advanced Manufacturing': { ytd: 6.45 },
+  'Fintech & Digital Payments': { ytd: 3.78 },
+  'Next-Generation Internet': { ytd: 5.12 },
+  'Autonomous Mobility': { ytd: 4.95 }
+};
+
+export const getMarketPerformance = (timeRange: TimeRange = '1y') => {
+  return generateMarketData(timeRange);
+};
+
+export const getSectorPerformance = () => {
+  return Object.entries(sectorPerformance).map(([name, data]) => ({
+    name,
+    value: data.ytd,
+    change: data.ytd,
+    percentChange: data.ytd
+  }));
+};
+
+export const getStockPicks = () => {
+  return Object.entries(stockPicks).map(([symbol, data]) => ({
+    symbol,
+    sector: data.sector,
+    return: data.return
+  }));
+};
+
+export const getStockPicksBySector = (sector: string) => {
+  return Object.entries(stockPicks)
+    .filter(([_, data]) => data.sector === sector)
+    .map(([symbol, data]) => ({
+      symbol,
+      return: data.return
+    }));
+};
+
+export const getSectorData = (sector: string, timeRange: TimeRange = '1y') => {
+  const baseValue = 100;
+  const dataPoints = {
+    '6m': 180,
+    '1y': 365,
+    '5y': 1825
+  };
+  
+  const points = dataPoints[timeRange];
+  const data = [];
+  const now = new Date();
+  const sectorGrowth = (sectorPerformance as Record<string, SectorData>)[sector]?.ytd || 5;
+
+  // Generate sector-specific data with more realistic patterns
+  let currentValue = baseValue;
+  const volatility = sectorGrowth > 0 ? 0.15 : 0.2; // Higher volatility for underperforming sectors
+  const trendStrength = sectorGrowth / 365; // Daily trend based on YTD performance
+
+  for (let i = points; i >= 0; i--) {
+    const date = new Date(now);
+    date.setDate(date.getDate() - i);
+    
+    // Add randomness and mean reversion
+    const dailyVolatility = (volatility / Math.sqrt(365)) * currentValue;
+    const randomWalk = (Math.random() - 0.5) * 2 * dailyVolatility;
+    const meanReversion = 0.002 * (baseValue - currentValue);
+    
+    // Update value
+    currentValue = currentValue * (1 + trendStrength) + randomWalk + meanReversion;
+    
+    // Add occasional sector-specific events
+    if (Math.random() < 0.002) { // 0.2% chance of sector news impact
+      currentValue *= (1 + (Math.random() - 0.5) * 0.08); // ±4% impact
+    }
+
+    data.push({
+      name: date.toISOString().split('T')[0],
+      value: Number(currentValue.toFixed(2))
+    });
+  }
+
+  return data;
 };
